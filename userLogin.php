@@ -5,10 +5,16 @@ include_once 'src/User.php';
 include_once 'src/config.php';
 include_once 'src/Tweet.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    $stmt = $conn->prepare("INSERT * INTO Users (email, password) VALUES (?, ?)");
+    $bind_param = $stmt->bind_param("s", $email, $password);
+    
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $sql = "SELECT * FROM Users WHERE email = '$email';";
-    $result = $conn->query($sql);
+
+    $execute = $stmt->execute();
+            
+    $result = $conn->querry($stmt);
     if ($result->num_rows === 1) {
         $row = $result->fetch_array(MYSQLI_ASSOC);
         if (password_verify($password, $row['hashed_password'])) {
@@ -32,26 +38,5 @@ $tweet->setText($tweet);
 $tweet->setCreationDate($date);
 $tweet->saveToDB($conn);
 } 
-?>
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Tweet</title>
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-    </head>
-    <body>
-        <div>
-            <form method="POST" action="#">
-                <textarea rows="10" cols="30" maxlength="140" 
-                          placeholder="O czym teraz myślisz ?" name="tweet">
-                </textarea>
-                <button type="submit">Tweet</button>
-            </form>
-        </div>
-        <div>
-        </div>
-    </body>
-</html>
 
