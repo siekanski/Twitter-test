@@ -1,35 +1,45 @@
 <?php
 
-session_start();
-include_once 'src/User.php';
-include_once 'src/config.php';
+require_once __DIR__."/src/connection.php";
+require_once __DIR__."/src/functions.php";
+require_once __DIR__."/src/header.php";
 ?>
+<div class="container">
+    <div class="row">
+        <div class="UserInfo">
 
-<!DOCTYPE html>
-<html lang="pl-PL">
-    <head>
-        <meta charset="UTF-8">
-        <title>Twitter/test - rejestracja</title>
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-    </head>
-    <body>
-        <div class="login">
-            <form class ="login-form" method="POST" action="userLogin.php">
-                <label class="login-header"><p>Zaloguj się!</p></label><br>
-                <input type="text" name="email" placeholder="Twój e-mail"><br>
-                <input type="password" name="password" placeholder="Twoje hasło"><br>
-                <button type="submit" name="Log in">Zaloguj</button>
-            </form>
+            <?php
+            if($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $loggedUser = User::LogIN($conn, $_POST['login'], $_POST['password']);
+                if($loggedUser != null) {
+                    $_SESSION['loggedUserId'] = $loggedUser->getId();
+                    header("Location: index.php");
+                } else {
+                    echo "Nie udalo sie zalogowac";
+                }
+            }
+            $conn->close();
+            $conn = null;
+            ?>
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+                    <form action="#" method="post">
+                        <div class="form-group>"
+                        <label>Login: <input class="form-control" type="text" name="login" placeholder="Login"></label></div>
+                        <div class="form-group>"
+                        <label>Password: <input class="form-control" type="password" name="password"></label></div><br>
+                        <button class="btn btn-primary" type="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+
         </div>
-        <div class="register">
-            <form class="register-form" method="POST" action="newUser.php">
-                <label class="register-header"><p>Dołącz do nas!</p></label><br>
-                <input type="text" name="newUsername" placeholder="Twoja nazwa użytkownika"><br>
-                <input type="text" name="newEmail" placeholder="Twój adres e-mails"><br>
-                <input type="password" name="newPassword" placeholder="Twoje hasło"><br>
-                <button type="submit" name="Sign up">Dołącz</button> 
-            </form>
-        </div>
-    </body>
+    </div>
+</div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+
+</body>
 </html>
-
